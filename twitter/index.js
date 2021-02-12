@@ -2,6 +2,7 @@ const Bitmex = require("bitmex-node");
 const AbortController = require('abort-controller');
 const fetch = require('node-fetch');
 const TwitterStream = require('twitter-v2/src/TwitterStream.js');
+require('dotenv').config()
 
 (async () => {
 
@@ -13,7 +14,7 @@ const TwitterStream = require('twitter-v2/src/TwitterStream.js');
 				signal: abortController.signal,
 				headers: {
 					"Content-Type": "application/json",
-					"Authorization": "Bearer ",
+					"Authorization": "Bearer " + process.env.bearer_token,
 				},
 			});
 		},
@@ -25,8 +26,8 @@ const TwitterStream = require('twitter-v2/src/TwitterStream.js');
 	//Setup bitmexapi
 
 	const bitmex = new Bitmex.BitmexAPI({
-		"apiKeyID": "",
-		"apiKeySecret": "",
+		"apiKeyID": process.env.api_key_id,
+		"apiKeySecret": process.env.api_key_secret,
 	});
 
 
@@ -34,7 +35,7 @@ const TwitterStream = require('twitter-v2/src/TwitterStream.js');
 	for await (const { data } of stream) {
 
 		if(typeof data === 'undefined'){
-			console.log("Received undefined tweet");
+			console.error("Received undefined tweet");
 			continue;
 		}
 
@@ -102,8 +103,8 @@ const TwitterStream = require('twitter-v2/src/TwitterStream.js');
 					});
 					console.log(takeprofit);
 				} catch (err) {
-					console.log("Error:");
-					console.log(err);
+					console.error("Couldn't sell: ");
+					console.error(err);
 				}
 			}
 		}
